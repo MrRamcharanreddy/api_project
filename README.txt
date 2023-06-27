@@ -37,23 +37,23 @@ The following API endpoints are available:
 - `GET /api/total_items`: Retrieves the total number of items sold within a specified date range and department.
 
 Query Parameters:
-- `start_date` (string): Start date in the format 'YYYY-MM-DD'.
-- `end_date` (string): End date in the format 'YYYY-MM-DD'.
+- `start_date` (string): Start date in the format '%d-%m-%Y %H:%M:%S'.
+- `end_date` (string): End date in the format '%d-%m-%Y %H:%M:%S'.
 - `department` (string): Optional department name.
 
 - `GET /api/nth_most_total_item`: Retrieves the nth most sold item in terms of quantity or total price within a specified date range.
 
 Query Parameters:
-- `start_date` (string): Start date in the format 'YYYY-MM-DD'.
-- `end_date` (string): End date in the format 'YYYY-MM-DD'.
+- `start_date` (string): Start date in the format '%d-%m-%Y %H:%M:%S'.
+- `end_date` (string): End date in the format '%d-%m-%Y %H:%M:%S'.
 - `item_by` (string): 'quantity' or 'price' to determine the sorting parameter.
 - `n` (integer): The value of n for the nth most sold item.
 
 - `GET /api/percentage_of_department_wise_sold_items`: Retrieves the percentage of sold items for each department within a specified date range.
 
 Query Parameters:
-- `start_date` (string): Start date in the format 'YYYY-MM-DD'.
-- `end_date` (string): End date in the format 'YYYY-MM-DD'.
+- `start_date` (string): Start date in the format '%d-%m-%Y %H:%M:%S'.
+- `end_date` (string): End date in the format '%d-%m-%Y %H:%M:%S'.
 
 - `GET /api/monthly_sales`: Retrieves the monthly sales data for a specific product and year.
 
