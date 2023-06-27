@@ -4,7 +4,6 @@ import csv
 import os
 from datetime import datetime
 
-
 def read_csv_data(file_path):
     data = []
     with open(file_path, 'r') as file:
@@ -18,7 +17,7 @@ def read_csv_data(file_path):
 def filter_transactions_by_date(transactions, start_date, end_date):
     filtered_transactions = []
     for transaction in transactions:
-        transaction_date = datetime.strptime(transaction['date'], '%Y-%m-%d').date()
+        transaction_date = datetime.strptime(transaction['date'], "%d-%m-%Y %H:%M:%S").date()
         if start_date <= transaction_date <= end_date:
             filtered_transactions.append(transaction)
     return filtered_transactions
@@ -89,8 +88,8 @@ def total_items(request):
 
     try:
         transactions = read_csv_data(csv_file_path)
-        start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
-        end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+        start_date = datetime.strptime(request.GET.get('start_date'), '%d-%m-%Y %H:%M:%S').date()
+        end_date = datetime.strptime(request.GET.get('end_date'), '%d-%m-%Y %H:%M:%S').date()
         department = request.GET.get('department')
 
         filtered_transactions = filter_transactions_by_date(transactions, start_date, end_date)
@@ -116,8 +115,8 @@ def nth_most_total_item(request):
 
     try:
         transactions = read_csv_data(csv_file_path)
-        start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
-        end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+        start_date = datetime.strptime(request.GET.get('start_date'), '%d-%m-%Y %H:%M:%S').date()
+        end_date = datetime.strptime(request.GET.get('end_date'), '%d-%m-%Y %H:%M:%S').date()
         item_by = request.GET.get('item_by')
         n = int(request.GET.get('n'))
 
@@ -141,8 +140,8 @@ def percentage_of_department_wise_sold_items(request):
 
     try:
         transactions = read_csv_data(csv_file_path)
-        start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
-        end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+        start_date = datetime.strptime(request.GET.get('start_date'), '%d-%m-%Y %H:%M:%S').date()
+        end_date = datetime.strptime(request.GET.get('end_date'), '%d-%m-%Y %H:%M:%S').date()
 
         filtered_transactions = filter_transactions_by_date(transactions, start_date, end_date)
 
