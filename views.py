@@ -5,10 +5,6 @@ import os
 from datetime import datetime
 
 
-def home(request):
-    return HttpResponse("Welcome to the API homepage.")
-
-
 def read_csv_data(file_path):
     data = []
     with open(file_path, 'r') as file:
@@ -80,6 +76,10 @@ def calculate_monthly_sales(transactions, product, year):
             monthly_sales[month - 1] += float(transaction['amount'])
 
     return monthly_sales
+
+
+def home(request):
+    return HttpResponse("Welcome to the API homepage.")
 
 
 @require_http_methods(["GET"])
