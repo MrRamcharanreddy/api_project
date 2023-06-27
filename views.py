@@ -1,8 +1,9 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
 import csv
 import os
-from django.http import HttpResponse
+from datetime import datetime
+
 
 def home(request):
     return HttpResponse("Welcome to the API homepage.")
@@ -11,8 +12,8 @@ def home(request):
 def read_csv_data(file_path):
     data = []
     with open(file_path, 'r') as file:
-        reader = csv.reader(file)
-        next(reader)  # Skip the header row if it exists
+        reader = csv.DictReader(file)
+        next(reader, None)
         for row in reader:
             data.append(row)
     return data
@@ -21,21 +22,22 @@ def read_csv_data(file_path):
 def filter_transactions_by_date(transactions, start_date, end_date):
     filtered_transactions = []
     for transaction in transactions:
-        if start_date <= transaction['date'] <= end_date:
+        transaction_date = datetime.strptime(transaction['date'], '%Y-%m-%d').date()
+        if start_date <= transaction_date <= end_date:
             filtered_transactions.append(transaction)
     return filtered_transactions
 
 
 def calculate_total_items(transactions):
-    total_items = sum(transaction['seats'] for transaction in transactions)
+    total_items = sum(int(transaction['seats']) for transaction in transactions)
     return total_items
 
 
 def calculate_n_most_sold_item(transactions, item_by, n):
     if item_by == 'quantity':
-        sorted_transactions = sorted(transactions, key=lambda t: t['seats'], reverse=True)
+        sorted_transactions = sorted(transactions, key=lambda t: int(t['seats']), reverse=True)
     elif item_by == 'price':
-        sorted_transactions = sorted(transactions, key=lambda t: t['amount'], reverse=True)
+        sorted_transactions = sorted(transactions, key=lambda t: int(t['amount']), reverse=True)
     else:
         raise ValueError('Invalid item_by parameter.')
 
@@ -48,11 +50,11 @@ def calculate_n_most_sold_item(transactions, item_by, n):
 
 def calculate_percentage_of_department_wise_sold_items(transactions):
     department_counts = {}
-    total_items = 0
+    total_items = 0.0
 
     for transaction in transactions:
         department = transaction['department']
-        seats = transaction['seats']
+        seats = int(transaction['seats'])
 
         if department in department_counts:
             department_counts[department] += seats
@@ -75,7 +77,7 @@ def calculate_monthly_sales(transactions, product, year):
     for transaction in transactions:
         if transaction['software'] == product and int(transaction['date'][:4]) == year:
             month = int(transaction['date'][5:7])
-            monthly_sales[month - 1] += transaction['amount']
+            monthly_sales[month - 1] += float(transaction['amount'])
 
     return monthly_sales
 
@@ -87,8 +89,8 @@ def total_items(request):
 
     try:
         transactions = read_csv_data(csv_file_path)
-        start_date = request.GET.get('start_date')
-        end_date = request.GET.get('end_date')
+        start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
+        end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
         department = request.GET.get('department')
 
         filtered_transactions = filter_transactions_by_date(transactions, start_date, end_date)
@@ -96,9 +98,9 @@ def total_items(request):
         if department:
             filtered_transactions = [t for t in filtered_transactions if t['department'] == department]
 
-        total_items = calculate_total_items(filtered_transactions)
+        total_items_count = calculate_total_items(filtered_transactions)
 
-        return JsonResponse({'total_items': total_items})
+        return JsonResponse({'total_items': total_items_count})
 
     except FileNotFoundError:
         return JsonResponse({'error': 'Data file not found.'}, status=404)
@@ -114,8 +116,8 @@ def nth_most_total_item(request):
 
     try:
         transactions = read_csv_data(csv_file_path)
-        start_date = request.GET.get('start_date')
-        end_date = request.GET.get('end_date')
+        start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
+        end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
         item_by = request.GET.get('item_by')
         n = int(request.GET.get('n'))
 
@@ -139,8 +141,8 @@ def percentage_of_department_wise_sold_items(request):
 
     try:
         transactions = read_csv_data(csv_file_path)
-        start_date = request.GET.get('start_date')
-        end_date = request.GET.get('end_date')
+        start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
+        end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
 
         filtered_transactions = filter_transactions_by_date(transactions, start_date, end_date)
 
